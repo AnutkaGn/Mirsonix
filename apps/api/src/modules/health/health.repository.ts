@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
-/** Placeholder: gains a real DB ping once TypeORM is wired in (Step 2). */
 @Injectable()
 export class HealthRepository {
+  constructor(private readonly dataSource: DataSource) {}
+
   async isDatabaseReachable(): Promise<boolean> {
-    return true;
+    try {
+      await this.dataSource.query('SELECT 1');
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

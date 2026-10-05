@@ -29,7 +29,8 @@ export const apiErrorSchema = z.object({
 export type ApiError = z.infer<typeof apiErrorSchema>;
 
 export const healthResponseSchema = z.object({
-  status: z.literal('ok'),
+  status: z.enum(['ok', 'degraded']),
+  database: z.enum(['up', 'down']),
   uptime: z.number(),
   timestamp: z.string(),
 });

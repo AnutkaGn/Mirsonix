@@ -13,7 +13,11 @@
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\" --ignore-path .gitignore",
     "db:up": "docker compose up -d postgres",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @mirsonix/api db:migrate",
+    "db:revert": "pnpm --filter @mirsonix/api db:revert",
+    "db:seed": "pnpm --filter @mirsonix/api db:seed",
+    "db:migration:generate": "pnpm --filter @mirsonix/api db:migration:generate"
   },
   "devDependencies": {
     "prettier": "^3.9.9",

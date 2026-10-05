@@ -48,3 +48,12 @@ export type AccessSource = z.infer<typeof AccessSource.schema>;
 
 export const WuXingElement = defineEnum(['WOOD', 'FIRE', 'EARTH', 'METAL', 'WATER'] as const);
 export type WuXingElement = z.infer<typeof WuXingElement.schema>;
+
+export const Polarity = defineEnum(['YIN', 'YANG'] as const);
+export type Polarity = z.infer<typeof Polarity.schema>;
+
+export const InvoiceStatus = defineEnum(['DRAFT', 'OPEN', 'PAID', 'UNCOLLECTIBLE', 'VOID'] as const);
+export type InvoiceStatus = z.infer<typeof InvoiceStatus.schema>;
+
+export const StripeEventStatus = defineEnum(['RECEIVED', 'PROCESSED', 'FAILED'] as const);
+export type StripeEventStatus = z.infer<typeof StripeEventStatus.schema>;

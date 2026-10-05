@@ -9,7 +9,9 @@ describe('GET /health', () => {
 
   beforeAll(async () => {
     process.env.WEB_ORIGIN = 'http://localhost:5173';
-    process.env.DATABASE_URL = 'postgresql://x:x@localhost:5432/x';
+    const { createTestDataSource, testDatabaseUrl } = await import('./helpers/test-db');
+    await (await createTestDataSource()).destroy();
+    process.env.DATABASE_URL = testDatabaseUrl;
     process.env.JWT_ACCESS_SECRET = 'x'.repeat(32);
     const { AppModule } = await import('../src/app.module');
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
@@ -25,6 +27,7 @@ describe('GET /health', () => {
     await app.listen(0);
     const res = await fetch(`${await app.getUrl()}/health`);
     expect(res.status).toBe(200);
-    expect(healthResponseSchema.safeParse(await res.json()).success).toBe(true);
+    const body = healthResponseSchema.parse(await res.json());
+    expect(body).toMatchObject({ status: 'ok', database: 'up' });
   });
 });
