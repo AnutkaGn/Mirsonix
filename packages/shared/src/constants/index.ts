@@ -24,3 +24,7 @@ export const UPLOAD_LIMITS = {
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
   },
 } as const;
+
+/** httpOnly cookie carrying the opaque refresh token; scoped to /auth so it is not sent to other endpoints. */
+export const REFRESH_COOKIE_NAME = 'mx_rt';
+export const REFRESH_COOKIE_PATH = '/auth';

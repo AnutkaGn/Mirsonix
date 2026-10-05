@@ -1,3 +1,4 @@
+import { STATUS_CODES } from 'node:http';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import type { ApiError } from '@mirsonix/shared';
 import type { Response } from 'express';
@@ -16,12 +17,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     res.status(body.statusCode).json(body);
   }
 
-  private toBody(exception: unknown): ApiError {
+  toBody(exception: unknown): ApiError {
     if (exception instanceof ZodValidationException) {
       const zodError = exception.getZodError() as ZodError;
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        error: 'Bad Request',
+        error: reasonPhrase(HttpStatus.BAD_REQUEST),
         message: 'Validation failed',
         details: zodError.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
       };
@@ -35,14 +36,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
           : ((response as { message?: string | string[] }).message ?? exception.message);
       return {
         statusCode: status,
-        error: exception.name.replace(/Exception$/, ''),
+        error: reasonPhrase(status),
         message: Array.isArray(message) ? message.join('; ') : message,
       };
     }
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      error: 'Internal Server Error',
+      error: reasonPhrase(HttpStatus.INTERNAL_SERVER_ERROR),
       message: 'Unexpected error',
     };
   }
 }
+
+/** The standard HTTP reason phrase ("Not Found"), not a class name that leaks implementation details. */
+const reasonPhrase = (status: number): string => STATUS_CODES[status] ?? 'Error';

@@ -11,6 +11,9 @@ export const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  /** A just-rotated refresh token reused within this window is rejected without revoking the family (parallel tabs). */
+  REFRESH_REUSE_GRACE_SECONDS: z.coerce.number().int().min(0).default(10),
+  BCRYPT_COST: z.coerce.number().int().min(4).max(15).default(12),
 
   // Third-party credentials are optional until the step that needs them (auth, media, billing).
   GOOGLE_CLIENT_ID: optionalString,
@@ -27,6 +30,11 @@ export const envSchema = z.object({
 
   STRIPE_SECRET_KEY: optionalString,
   STRIPE_WEBHOOK_SECRET: optionalString,
+}).superRefine((env, ctx) => {
+  // .env.example ships a placeholder; a deployed API signing tokens with it would be forgeable.
+  if (env.NODE_ENV === 'production' && /^change-me/i.test(env.JWT_ACCESS_SECRET)) {
+    ctx.addIssue({ code: 'custom', path: ['JWT_ACCESS_SECRET'], message: 'must not be the example placeholder in production' });
+  }
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Client } from 'pg';
 import { DataSource, type MigrationInterface } from 'typeorm';
-import { buildDataSourceOptions } from '../../src/database/data-source';
+import { buildDataSourceOptions } from '../../src/database/options';
 
 const BASE_URL = process.env.TEST_DATABASE_URL ?? 'postgresql://mirsonix:mirsonix@localhost:5433/mirsonix_test';
 

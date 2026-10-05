@@ -5,5 +5,14 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react()],
   resolve: { alias: { '@': path.resolve(import.meta.dirname, 'src') } },
-  test: { environment: 'jsdom', include: ['src/**/*.spec.{ts,tsx}'] },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.spec.{ts,tsx}'],
+    env: { VITE_API_URL: 'http://api.test' },
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/main.tsx', 'src/vite-env.d.ts', 'src/components/ui/**', 'src/i18n/**', 'src/**/*.spec.{ts,tsx}'],
+    },
+  },
 });

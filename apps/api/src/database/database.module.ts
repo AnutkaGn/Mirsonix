@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from '../config/app-config.module';
-import { buildDataSourceOptions } from './data-source';
+import { buildDataSourceOptions } from './options';
 
 @Module({
   imports: [

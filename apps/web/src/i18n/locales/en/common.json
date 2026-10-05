@@ -1,6 +1,57 @@
 {
-  "app": { "name": "Mirsonix", "tagline": "Sound healing, tuned to your body." },
-  "nav": { "home": "Home", "library": "My Library", "admin": "Admin" },
-  "status": { "apiOnline": "API online", "apiOffline": "API unreachable", "checking": "Checking API…" },
-  "notFound": { "title": "Page not found", "back": "Back to home" }
+  "app": {
+    "name": "Mirsonix",
+    "tagline": "Sound healing, tuned to your body."
+  },
+  "nav": {
+    "home": "Home",
+    "library": "My Library",
+    "admin": "Admin",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "name": "Name (optional)",
+    "email": "Email",
+    "password": "Password",
+    "or": "or",
+    "google": "Continue with Google",
+    "login": {
+      "title": "Welcome back",
+      "submit": "Sign in",
+      "switchPrompt": "New to Mirsonix?",
+      "switchAction": "Create an account"
+    },
+    "register": {
+      "title": "Create your account",
+      "submit": "Create account",
+      "switchPrompt": "Already have an account?",
+      "switchAction": "Sign in"
+    },
+    "errors": {
+      "credentials": "Invalid email or password.",
+      "taken": "An account with this email already exists.",
+      "tooMany": "Too many attempts. Please wait a minute and try again.",
+      "google": "Google sign-in did not complete. Please try again.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "signingIn": "Signing you in…"
+  },
+  "status": {
+    "apiOnline": "API online",
+    "apiOffline": "API unreachable",
+    "checking": "Checking API…"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Back to home"
+  },
+  "common": {
+    "loading": "Loading…"
+  },
+  "admin": {
+    "badge": "admin",
+    "dashboard": "Dashboard"
+  }
 }
