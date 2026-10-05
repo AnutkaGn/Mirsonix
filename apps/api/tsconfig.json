@@ -1,0 +1,10 @@
+{
+  "extends": "@mirsonix/tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "strictPropertyInitialization": false
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,48 @@
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import type { ApiError } from '@mirsonix/shared';
+import type { Response } from 'express';
+import { ZodValidationException } from 'nestjs-zod';
+import type { ZodError } from 'zod';
+
+/** Normalises every error to the shared ApiError shape. */
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const res = host.switchToHttp().getResponse<Response>();
+    const body = this.toBody(exception);
+    if (body.statusCode >= 500) this.logger.error(exception);
+    res.status(body.statusCode).json(body);
+  }
+
+  private toBody(exception: unknown): ApiError {
+    if (exception instanceof ZodValidationException) {
+      const zodError = exception.getZodError() as ZodError;
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+        message: 'Validation failed',
+        details: zodError.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
+      };
+    }
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const response = exception.getResponse();
+      const message =
+        typeof response === 'string'
+          ? response
+          : ((response as { message?: string | string[] }).message ?? exception.message);
+      return {
+        statusCode: status,
+        error: exception.name.replace(/Exception$/, ''),
+        message: Array.isArray(message) ? message.join('; ') : message,
+      };
+    }
+    return {
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      error: 'Internal Server Error',
+      message: 'Unexpected error',
+    };
+  }
+}

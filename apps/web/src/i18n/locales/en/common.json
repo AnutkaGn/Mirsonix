@@ -1,0 +1,6 @@
+{
+  "app": { "name": "Mirsonix", "tagline": "Sound healing, tuned to your body." },
+  "nav": { "home": "Home", "library": "My Library", "admin": "Admin" },
+  "status": { "apiOnline": "API online", "apiOffline": "API unreachable", "checking": "Checking API…" },
+  "notFound": { "title": "Page not found", "back": "Back to home" }
+}

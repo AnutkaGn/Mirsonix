@@ -1,0 +1,4 @@
+{
+  "extends": "@mirsonix/tsconfig/library.json",
+  "include": ["src", "tsup.config.ts"]
+}
