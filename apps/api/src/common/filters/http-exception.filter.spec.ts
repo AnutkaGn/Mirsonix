@@ -1,6 +1,6 @@
-import { BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Logger, NotFoundException, ServiceUnavailableException, type ArgumentsHost } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { AllExceptionsFilter } from './http-exception.filter';
 
@@ -34,5 +34,37 @@ describe('AllExceptionsFilter.toBody', () => {
       error: 'Internal Server Error',
       message: 'Unexpected error',
     });
+  });
+});
+
+describe('AllExceptionsFilter logging', () => {
+  const json = vi.fn();
+  const status = vi.fn(() => ({ json }));
+  const host = { switchToHttp: () => ({ getResponse: () => ({ status }) }) } as unknown as ArgumentsHost;
+  const error = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+  const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+
+  afterEach(() => vi.clearAllMocks());
+
+  it('logs an unexpected error with its stack and answers 500', () => {
+    const boom = new Error('boom');
+    filter.catch(boom, host);
+
+    expect(error).toHaveBeenCalledWith(boom);
+    expect(status).toHaveBeenCalledWith(500);
+  });
+
+  it('logs a deliberate 5xx as one warning line, without a stack', () => {
+    filter.catch(new ServiceUnavailableException('Storage is not configured'), host);
+
+    expect(warn).toHaveBeenCalledWith('503 Storage is not configured');
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it('does not log client errors at all', () => {
+    filter.catch(new NotFoundException(), host);
+
+    expect(warn).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 });

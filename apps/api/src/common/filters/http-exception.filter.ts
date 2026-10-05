@@ -13,7 +13,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const res = host.switchToHttp().getResponse<Response>();
     const body = this.toBody(exception);
-    if (body.statusCode >= 500) this.logger.error(exception);
+    if (exception instanceof HttpException) {
+      // A deliberate 5xx (e.g. storage not configured) is a known state: one line, no stack.
+      if (body.statusCode >= 500) this.logger.warn(`${body.statusCode} ${body.message}`);
+    } else {
+      this.logger.error(exception); // unexpected: keep the stack
+    }
     res.status(body.statusCode).json(body);
   }
 

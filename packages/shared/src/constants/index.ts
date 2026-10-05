@@ -28,3 +28,11 @@ export const UPLOAD_LIMITS = {
 /** httpOnly cookie carrying the opaque refresh token; scoped to /auth so it is not sent to other endpoints. */
 export const REFRESH_COOKIE_NAME = 'mx_rt';
 export const REFRESH_COOKIE_PATH = '/auth';
+
+/** One bucket holds everything; the key prefix decides visibility. `audio/` is never public. */
+export const STORAGE_PREFIX = { audio: 'audio', cover: 'covers' } as const;
+
+/** How long a presigned upload form stays valid. */
+export const UPLOAD_URL_TTL_SECONDS = 15 * 60;
+/** Lifetime of a signed cover URL when covers are not served from a public base URL. */
+export const COVER_URL_TTL_SECONDS = 60 * 60;

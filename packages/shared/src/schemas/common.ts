@@ -35,3 +35,6 @@ export const healthResponseSchema = z.object({
   timestamp: z.string(),
 });
 export type HealthResponse = z.infer<typeof healthResponseSchema>;
+
+export const idParamSchema = z.object({ id: uuidSchema });
+export const slugParamSchema = z.object({ slug: z.string().min(1).max(160) });

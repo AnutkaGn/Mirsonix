@@ -3,6 +3,7 @@ import type { DataSource } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Roles } from '../src/modules/auth/decorators/roles.decorator';
 import { GoogleOAuthPort, type GoogleProfile } from '../src/modules/auth/google/google-oauth.port';
+import { createHttp } from './helpers/http';
 import { createTestApp, type TestApp } from './helpers/test-app';
 import { createTestDataSource } from './helpers/test-db';
 
@@ -39,25 +40,7 @@ const PASSWORD = 'correct-horse-9';
 let n = 0;
 const freshEmail = () => `user${++n}-${Date.now()}@test.dev`;
 
-async function call(path: string, opts: { method?: string; body?: unknown; token?: string; cookie?: string } = {}) {
-  const headers: Record<string, string> = {};
-  if (opts.body !== undefined) headers['content-type'] = 'application/json';
-  if (opts.token) headers.authorization = `Bearer ${opts.token}`;
-  if (opts.cookie) headers.cookie = opts.cookie;
-  const res = await fetch(`${t.url}${path}`, {
-    method: opts.method ?? (opts.body !== undefined ? 'POST' : 'GET'),
-    headers,
-    body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-    redirect: 'manual',
-  });
-  const text = await res.text();
-  return {
-    status: res.status,
-    json: text && res.headers.get('content-type')?.includes('json') ? JSON.parse(text) : null,
-    location: res.headers.get('location'),
-    cookies: res.headers.getSetCookie(),
-  };
-}
+const call = createHttp(() => t.url);
 
 const refreshCookie = (cookies: string[]) => cookies.find((c) => c.startsWith('mx_rt='));
 const cookieHeader = (cookies: string[]) => refreshCookie(cookies)!.split(';')[0]!;

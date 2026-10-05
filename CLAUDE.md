@@ -15,7 +15,8 @@ Turborepo + pnpm monorepo. `apps/api` NestJS 11 (Controller → Service → Repo
 - Access to a track = active subscription to the track, or to a program that contains it, or a manual grant. One `AccessService` answers this. Nothing else decides access.
 - PAST_DUE blocks access immediately. Canceling keeps access until the paid period ends.
 - One currency (USD). Money is stored in minor units.
-- Audio is private. The backend issues a short-lived pre-signed S3 URL only after the access check. Covers are public.
+- One S3 bucket (`S3_BUCKET`). Audio under `audio/` is private: the backend issues a short-lived pre-signed URL only after the access check. Covers under `covers/` may be public (`S3_PUBLIC_BASE_URL`), otherwise they are signed. Setup: `docs/storage.md`. AWS keys are filled in last; until then upload endpoints answer 503 and tests use a fake storage.
+- Content lifecycle: DRAFT → PUBLISHED ⇄ ARCHIVED, never back to DRAFT. Publishing a track needs a cover; a program needs a poster and only published tracks. A track in a published program cannot be archived.
 - Roles: `USER`, `ADMIN`. Only English for now, but all UI strings go through i18n.
 
 ## Commands
@@ -34,6 +35,7 @@ pnpm --filter @mirsonix/api db:migration:generate src/database/migrations/<Name>
 - Postgres is on host port **5433** (the machine has another Postgres on 5432). Another app uses port 3000, so the API is on **4000**.
 - TypeScript is pinned to 6.0.x (typescript-eslint does not support 7). NestJS is pinned to 11 (`nestjs-zod` does not support 12).
 - The TypeORM CLI and seeds run from compiled `dist/`, so `db:*` scripts build first. Entities state column types explicitly.
+- The sandbox only allows writes in the project and temp dirs, so SWC (used by API tests) intermittently cannot write its cache lock under `~/Library/Caches`. Run the API tests with the sandbox disabled, or allow `~/Library/Caches/swc-native-501` in the sandbox settings.
 - API tests need Postgres up: they recreate a `mirsonix_test` database and run the real migrations. They run serially (`--no-file-parallelism`).
 - In API e2e tests `vi.resetModules()` makes a fresh module graph, so import DI tokens inside the helper callback (see `test/helpers/test-app.ts`).
 - `NODE_ENV=test` disables rate limiting. Never put `NODE_ENV` in `.env`: the web app reads the same file, and Vite would then compile the production bundle in development mode. The API defaults to `development`; set it in the deploy environment.

@@ -1,6 +1,6 @@
 import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthSession, AuthUser, LoginInput, RegisterInput } from '@mirsonix/shared';
-import { QueryFailedError } from 'typeorm';
+import { isUniqueViolation } from '../../common/db-errors';
 import type { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import type { RequestMeta } from './auth.types';
@@ -14,8 +14,6 @@ export interface AuthResult {
   session: AuthSession;
   refresh: IssuedRefreshToken;
 }
-
-const UNIQUE_VIOLATION = '23505';
 
 export const toAuthUser = (user: User): AuthUser => ({
   id: user.id,
@@ -122,8 +120,4 @@ export class AuthService {
       user: toAuthUser(user),
     };
   }
-}
-
-function isUniqueViolation(error: unknown): boolean {
-  return error instanceof QueryFailedError && (error.driverError as { code?: string })?.code === UNIQUE_VIOLATION;
 }

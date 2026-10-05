@@ -23,9 +23,11 @@ export const envSchema = z.object({
   AWS_REGION: z.string().default('us-east-1'),
   AWS_ACCESS_KEY_ID: optionalString,
   AWS_SECRET_ACCESS_KEY: optionalString,
-  S3_BUCKET_PRIVATE_AUDIO: optionalString,
-  S3_BUCKET_PUBLIC_MEDIA: optionalString,
-  S3_PUBLIC_BASE_URL: optionalString,
+  /** One bucket for everything: `audio/` is private, `covers/` may be public (see S3_PUBLIC_BASE_URL). */
+  S3_BUCKET: optionalString,
+  /** Public base URL serving the `covers/` prefix (bucket policy or CloudFront). Unset: covers use signed URLs. */
+  S3_PUBLIC_BASE_URL: optionalString.pipe(z.url().optional()),
+  /** Lifetime of a signed audio download URL. */
   S3_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(600),
 
   STRIPE_SECRET_KEY: optionalString,

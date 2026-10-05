@@ -17,7 +17,7 @@ export interface TestApp {
  */
 export async function createTestApp(
   env: Record<string, string> = {},
-  configure?: (builder: ReturnType<typeof Test.createTestingModule>, tokens: { GoogleOAuthPort: Type }) => void,
+  configure?: (builder: ReturnType<typeof Test.createTestingModule>, tokens: { GoogleOAuthPort: Type; StoragePort: Type }) => void,
   extraControllers: Type[] = [],
 ): Promise<TestApp> {
   Object.assign(process.env, {
@@ -33,7 +33,8 @@ export async function createTestApp(
   const builder = Test.createTestingModule({ imports: [AppModule], controllers: extraControllers });
   // Tokens must come from the same module instance as the app, which resetModules just replaced.
   const { GoogleOAuthPort } = await import('../../src/modules/auth/google/google-oauth.port');
-  configure?.(builder, { GoogleOAuthPort });
+  const { StoragePort } = await import('../../src/modules/media/storage.port');
+  configure?.(builder, { GoogleOAuthPort, StoragePort });
   const app = (await builder.compile()).createNestApplication();
   app.use(cookieParser());
   await app.init();

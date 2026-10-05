@@ -2,12 +2,9 @@ import 'reflect-metadata';
 import bcrypt from 'bcryptjs';
 import { config as loadEnv } from 'dotenv';
 import { z } from 'zod';
-import { Element } from '../../modules/catalog/entities/element.entity';
-import { Issue } from '../../modules/catalog/entities/issue.entity';
-import { Meridian } from '../../modules/catalog/entities/meridian.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import dataSource from '../data-source';
-import { ELEMENTS, ISSUES, MERIDIANS } from './reference-data';
+import { seedReferenceData } from './reference-seed';
 
 loadEnv({ path: ['.env', '../../.env'], quiet: true });
 
@@ -20,14 +17,7 @@ const adminEnv = z.object({
 async function seed() {
   await dataSource.initialize();
   await dataSource.transaction(async (em) => {
-    await em.getRepository(Element).upsert(ELEMENTS, ['code']);
-    const elements = new Map((await em.getRepository(Element).find()).map((e) => [e.code, e.id]));
-
-    await em.getRepository(Meridian).upsert(
-      MERIDIANS.map(({ element, ...m }) => ({ ...m, elementId: element ? (elements.get(element) ?? null) : null })),
-      ['code'],
-    );
-    await em.getRepository(Issue).upsert(ISSUES, ['slug']);
+    await seedReferenceData(em);
 
     const { SEED_ADMIN_EMAIL: email, SEED_ADMIN_PASSWORD: password } = adminEnv.parse(process.env);
     if (!email || !password) {
