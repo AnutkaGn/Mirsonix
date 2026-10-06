@@ -12,6 +12,10 @@ export class UsersService {
     return this.repository.findById(id);
   }
 
+  findByStripeCustomerId(stripeCustomerId: string): Promise<User | null> {
+    return this.repository.findByStripeCustomerId(stripeCustomerId);
+  }
+
   findByEmail(email: string): Promise<User | null> {
     return this.repository.findByEmail(email);
   }

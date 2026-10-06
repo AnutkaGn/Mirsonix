@@ -12,8 +12,10 @@ Turborepo + pnpm monorepo. `apps/api` NestJS 11 (Controller → Service → Repo
 
 ## Product rules
 
-- Access to a track = active subscription to the track, or to a program that contains it, or a manual grant. One `AccessService` answers this. Nothing else decides access.
-- PAST_DUE blocks access immediately. Canceling keeps access until the paid period ends.
+- Access to a track = active subscription to the track, or to a program that contains it, or a manual grant. One `AccessService` (`modules/access`) answers this. Nothing else decides access. Archived content stays playable for people who subscribed.
+- PAST_DUE blocks access immediately. Canceling keeps access until the paid period ends. An ACTIVE subscription whose period ended over 6 hours ago is distrusted (missed webhooks).
+- Stripe is the source of truth. Webhooks (`POST /billing/webhook`: verified signature, idempotent by event id, upserts) update `subscriptions`/`invoices`; opening checkout grants nothing. The price and the target always come from our own tables, never from the client or from webhook metadata. Setup: `docs/billing.md`. Stripe keys are filled in last; until then billing answers 503 and tests use a fake `PaymentsPort`.
+- A published item may have no price (it just cannot be bought). Prices are set by admins in cents; a change creates a new Stripe price and archives the old.
 - One currency (USD). Money is stored in minor units.
 - One S3 bucket (`S3_BUCKET`). Audio under `audio/` is private: the backend issues a short-lived pre-signed URL only after the access check. Covers under `covers/` may be public (`S3_PUBLIC_BASE_URL`), otherwise they are signed. Setup: `docs/storage.md`. AWS keys are filled in last; until then upload endpoints answer 503 and tests use a fake storage.
 - Content lifecycle: DRAFT → PUBLISHED ⇄ ARCHIVED, never back to DRAFT. Publishing a track needs a cover; a program needs a poster and only published tracks. A track in a published program cannot be archived.

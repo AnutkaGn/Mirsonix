@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuditModule } from '../audit/audit.module';
 import { MediaModule } from '../media/media.module';
+import { PricingModule } from '../pricing/pricing.module';
 import { CatalogReadService } from './catalog-read.service';
 import { CatalogController } from './catalog.controller';
+import { ContentLookupService } from './content-lookup.service';
 import { Element } from './entities/element.entity';
 import { Issue } from './entities/issue.entity';
 import { Meridian } from './entities/meridian.entity';
@@ -24,6 +26,7 @@ import { TracksRepository } from './tracks.repository';
   imports: [
     TypeOrmModule.forFeature([Track, Program, ProgramTrack, TrackMeridian, TrackIssue, Element, Meridian, Issue]),
     MediaModule,
+    PricingModule,
     AuditModule,
   ],
   controllers: [CatalogController, TracksAdminController, ProgramsAdminController],
@@ -32,8 +35,10 @@ import { TracksRepository } from './tracks.repository';
     ProgramsRepository,
     TaxonomyRepository,
     CatalogReadService,
+    ContentLookupService,
     TracksAdminService,
     ProgramsAdminService,
   ],
+  exports: [CatalogReadService, ContentLookupService],
 })
 export class CatalogModule {}

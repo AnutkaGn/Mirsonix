@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ContentStatus, WaveType, WuXingElement } from '../enums';
+import { pricesSchema } from './billing';
 import { paginated, paginationQuerySchema } from './common';
 
 /* ---------- taxonomy ---------- */
@@ -32,6 +33,7 @@ export const trackSummarySchema = z.object({
   frequencyHz: z.number().nullable(),
   waveType: WaveType.schema.nullable(),
   coverUrl: z.string().nullable(),
+  prices: pricesSchema,
   meridians: z.array(meridianRefSchema),
   issues: z.array(issueRefSchema),
 });
@@ -54,6 +56,7 @@ export const programSummarySchema = z.object({
   title: z.string(),
   description: z.string(),
   posterUrl: z.string().nullable(),
+  prices: pricesSchema,
   trackCount: z.number().int(),
   totalDurationSec: z.number().int(),
 });

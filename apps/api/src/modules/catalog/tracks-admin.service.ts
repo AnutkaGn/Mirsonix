@@ -13,6 +13,7 @@ import { uniqueSlug } from '../../common/slug';
 import { AuditService } from '../audit/audit.service';
 import type { MediaAsset } from '../media/entities/media-asset.entity';
 import { MediaService } from '../media/media.service';
+import { PricingService } from '../pricing/pricing.service';
 import { toAdminTrack } from './catalog.mapper';
 import { assertTransition } from './content-status';
 import type { Track } from './entities/track.entity';
@@ -30,21 +31,26 @@ export class TracksAdminService {
     private readonly tracks: TracksRepository,
     private readonly taxonomy: TaxonomyRepository,
     private readonly media: MediaService,
+    private readonly pricing: PricingService,
     private readonly audit: AuditService,
   ) {}
 
   async list(query: AdminTrackListQuery): Promise<AdminTrackList> {
     const { items, total } = await this.tracks.search({ ...query, sort: 'updated' });
-    const covers = await this.media.imageUrls(items.map((track) => track.coverAsset));
+    const [covers, book] = await Promise.all([
+      this.media.imageUrls(items.map((track) => track.coverAsset)),
+      this.pricing.bookFor(items.map((track) => track.id), []),
+    ]);
     return {
-      items: items.map((track, i) => toAdminTrack(track, covers[i] ?? null)),
+      items: items.map((track, i) => toAdminTrack(track, covers[i] ?? null, book.for({ kind: 'TRACK', id: track.id }))),
       meta: toPaginationMeta(query.page, query.limit, total),
     };
   }
 
   async get(id: string): Promise<AdminTrack> {
     const track = await this.require(id);
-    return toAdminTrack(track, await this.media.imageUrl(track.coverAsset));
+    const [coverUrl, prices] = await Promise.all([this.media.imageUrl(track.coverAsset), this.pricing.pricesOf({ kind: 'TRACK', id })]);
+    return toAdminTrack(track, coverUrl, prices);
   }
 
   async create(adminId: string, input: CreateTrackInput): Promise<AdminTrack> {

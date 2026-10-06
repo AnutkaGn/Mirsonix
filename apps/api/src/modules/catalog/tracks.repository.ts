@@ -24,7 +24,16 @@ export interface TrackSearch {
 export type TrackPatch = Partial<
   Pick<
     Track,
-    'title' | 'description' | 'durationSec' | 'frequencyHz' | 'waveType' | 'audioAssetId' | 'coverAssetId' | 'status' | 'publishedAt'
+    | 'title'
+    | 'description'
+    | 'durationSec'
+    | 'frequencyHz'
+    | 'waveType'
+    | 'audioAssetId'
+    | 'coverAssetId'
+    | 'status'
+    | 'publishedAt'
+    | 'stripeProductId'
   >
 >;
 
@@ -42,6 +51,11 @@ export class TracksRepository {
 
   findById(id: string): Promise<Track | null> {
     return this.tracks.findOne({ where: { id }, relations: CARD_RELATIONS });
+  }
+
+  /** Cards for any status: a subscriber keeps seeing a track after it is archived. */
+  findManyByIds(ids: string[]): Promise<Track[]> {
+    return ids.length ? this.tracks.find({ where: { id: In(ids) }, relations: CARD_RELATIONS }) : Promise.resolve([]);
   }
 
   findBySlug(slug: string, status?: ContentStatus): Promise<Track | null> {

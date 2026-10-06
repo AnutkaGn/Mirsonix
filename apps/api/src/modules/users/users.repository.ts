@@ -17,6 +17,10 @@ export class UsersRepository {
     return this.users.findOneBy({ id });
   }
 
+  findByStripeCustomerId(stripeCustomerId: string): Promise<User | null> {
+    return this.users.findOneBy({ stripeCustomerId });
+  }
+
   findByEmail(email: string): Promise<User | null> {
     return this.users.findOneBy({ email });
   }

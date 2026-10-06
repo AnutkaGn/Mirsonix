@@ -12,6 +12,7 @@ import { toPaginationMeta } from '../../common/pagination';
 import { uniqueSlug } from '../../common/slug';
 import { AuditService } from '../audit/audit.service';
 import { MediaService } from '../media/media.service';
+import { PricingService } from '../pricing/pricing.service';
 import { toAdminProgram, toAdminTrack } from './catalog.mapper';
 import { assertTransition } from './content-status';
 import type { Program } from './entities/program.entity';
@@ -24,17 +25,22 @@ export class ProgramsAdminService {
     private readonly programs: ProgramsRepository,
     private readonly tracks: TracksRepository,
     private readonly media: MediaService,
+    private readonly pricing: PricingService,
     private readonly audit: AuditService,
   ) {}
 
   async list(query: AdminProgramListQuery): Promise<AdminProgramList> {
     const { items, total } = await this.programs.search({ ...query, sort: 'updated' });
-    const [aggregates, posters] = await Promise.all([
-      this.programs.aggregates(items.map((p) => p.id), { publishedOnly: false }),
+    const ids = items.map((program) => program.id);
+    const [aggregates, posters, book] = await Promise.all([
+      this.programs.aggregates(ids, { publishedOnly: false }),
       this.media.imageUrls(items.map((program) => program.posterAsset)),
+      this.pricing.bookFor([], ids),
     ]);
     return {
-      items: items.map((program, i) => toAdminProgram(program, posters[i] ?? null, aggregates.get(program.id))),
+      items: items.map((program, i) =>
+        toAdminProgram(program, posters[i] ?? null, book.for({ kind: 'PROGRAM', id: program.id }), aggregates.get(program.id)),
+      ),
       meta: toPaginationMeta(query.page, query.limit, total),
     };
   }
@@ -42,17 +48,19 @@ export class ProgramsAdminService {
   async get(id: string): Promise<AdminProgramDetail> {
     const program = await this.require(id);
     const programTracks = await this.programs.findTracks(id, { publishedOnly: false });
-    const [posterUrl, covers] = await Promise.all([
+    const [posterUrl, covers, programPrices, book] = await Promise.all([
       this.media.imageUrl(program.posterAsset),
       this.media.imageUrls(programTracks.map(({ track }) => track.coverAsset)),
+      this.pricing.pricesOf({ kind: 'PROGRAM', id }),
+      this.pricing.bookFor(programTracks.map(({ track }) => track.id), []),
     ]);
     const aggregate = {
       trackCount: programTracks.length,
       totalDurationSec: programTracks.reduce((sum, { track }) => sum + track.durationSec, 0),
     };
     return {
-      ...toAdminProgram(program, posterUrl, aggregate),
-      tracks: programTracks.map(({ track }, i) => toAdminTrack(track, covers[i] ?? null)),
+      ...toAdminProgram(program, posterUrl, programPrices, aggregate),
+      tracks: programTracks.map(({ track }, i) => toAdminTrack(track, covers[i] ?? null, book.for({ kind: 'TRACK', id: track.id }))),
     };
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { ContentStatus } from '@mirsonix/shared';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { escapeLike, toOffset } from '../../common/pagination';
 import { ProgramTrack } from './entities/program-track.entity';
 import { Program } from './entities/program.entity';
@@ -19,7 +19,7 @@ export interface ProgramAggregate {
   totalDurationSec: number;
 }
 
-export type ProgramPatch = Partial<Pick<Program, 'title' | 'description' | 'posterAssetId' | 'status' | 'publishedAt'>>;
+export type ProgramPatch = Partial<Pick<Program, 'title' | 'description' | 'posterAssetId' | 'status' | 'publishedAt' | 'stripeProductId'>>;
 export type NewProgram = Pick<Program, 'slug' | 'title' | 'description' | 'posterAssetId' | 'createdById'>;
 
 const PROGRAM_RELATIONS = { posterAsset: true } as const;
@@ -36,6 +36,10 @@ export class ProgramsRepository {
 
   findById(id: string): Promise<Program | null> {
     return this.programs.findOne({ where: { id }, relations: PROGRAM_RELATIONS });
+  }
+
+  findManyByIds(ids: string[]): Promise<Program[]> {
+    return ids.length ? this.programs.find({ where: { id: In(ids) }, relations: PROGRAM_RELATIONS }) : Promise.resolve([]);
   }
 
   findBySlug(slug: string, status?: ContentStatus): Promise<Program | null> {

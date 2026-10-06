@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from '../../config/app-config.module';
 import { RefreshToken } from '../users/entities/refresh-token.entity';
@@ -27,13 +26,6 @@ import { RefreshTokensService } from './tokens/refresh-tokens.service';
         secret: config.get('JWT_ACCESS_SECRET'),
         signOptions: { algorithm: 'HS256', issuer: 'mirsonix', audience: 'mirsonix-web' },
         verifyOptions: { algorithms: ['HS256'], issuer: 'mirsonix', audience: 'mirsonix-web' },
-      }),
-    }),
-    ThrottlerModule.forRootAsync({
-      inject: [AppConfig],
-      useFactory: (config: AppConfig) => ({
-        throttlers: [{ ttl: 60_000, limit: 60 }],
-        skipIf: () => config.get('NODE_ENV') === 'test',
       }),
     }),
   ],

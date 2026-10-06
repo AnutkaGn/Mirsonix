@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
 import { seedReferenceData } from '../../src/database/seeds/reference-seed';
+import { FakePayments, VALID_SIGNATURE } from './fake-payments';
 import { FakeStorage } from './fake-storage';
 import { createHttp, type CallResult } from './http';
 import { createTestApp, type TestApp } from './test-app';
@@ -19,7 +20,10 @@ export async function startCatalogApp() {
   const ds: DataSource = await createTestDataSource();
   await ds.transaction((em) => seedReferenceData(em));
   const storage = new FakeStorage();
-  const app: TestApp = await createTestApp({}, (builder, tokens) => builder.overrideProvider(tokens.StoragePort).useValue(storage));
+  const payments = new FakePayments();
+  const app: TestApp = await createTestApp({}, (builder, tokens) =>
+    builder.overrideProvider(tokens.StoragePort).useValue(storage).overrideProvider(tokens.PaymentsPort).useValue(payments),
+  );
   const call = createHttp(() => app.url);
 
   async function signIn(role: 'ADMIN' | 'USER'): Promise<Actor> {
@@ -94,10 +98,66 @@ export async function startCatalogApp() {
     return created.json;
   }
 
+  type Target = { kind: 'TRACK' | 'PROGRAM'; id: string };
+  const targetColumns = (target: Target) => (target.kind === 'TRACK' ? [target.id, null] : [null, target.id]);
+
+  /** An active price straight in the database (reusing the active one if there is one), without going through Stripe. */
+  async function price(target: Target, interval: 'MONTH' | 'YEAR' = 'MONTH', amountMinor = 999): Promise<{ id: string; stripePriceId: string }> {
+    const [trackId, programId] = targetColumns(target);
+    const [existing] = await ds.query(
+      `SELECT id, stripe_price_id FROM prices WHERE track_id IS NOT DISTINCT FROM $1 AND program_id IS NOT DISTINCT FROM $2 AND interval = $3 AND is_active`,
+      [trackId, programId, interval],
+    );
+    if (existing) return { id: existing.id, stripePriceId: existing.stripe_price_id };
+    const stripePriceId = `price_db_${randomUUID().slice(0, 8)}`;
+    const [row] = await ds.query(
+      `INSERT INTO prices (track_id, program_id, interval, stripe_price_id, amount_minor) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+      [trackId, programId, interval, stripePriceId, amountMinor],
+    );
+    return { id: row.id, stripePriceId };
+  }
+
+  /** Gives the user a Stripe customer id, as a first checkout would. */
+  async function customerOf(actor: Actor): Promise<string> {
+    const customerId = `cus_db_${actor.id.slice(0, 8)}`;
+    await ds.query(`UPDATE users SET stripe_customer_id = $1 WHERE id = $2`, [customerId, actor.id]);
+    return customerId;
+  }
+
+  /** A subscription row as Stripe's webhooks would have left it. Defaults to active for 30 more days. */
+  async function subscribe(
+    actor: Actor,
+    target: Target,
+    options: { status?: string; periodEnd?: Date | null; cancelAtPeriodEnd?: boolean } = {},
+  ): Promise<string> {
+    const [trackId, programId] = targetColumns(target);
+    const { id: priceId } = await price(target);
+    const periodEnd = options.periodEnd === undefined ? new Date(Date.now() + 30 * 24 * 3600 * 1000) : options.periodEnd;
+    const [row] = await ds.query(
+      `INSERT INTO subscriptions (user_id, track_id, program_id, price_id, stripe_subscription_id, status, current_period_end, cancel_at_period_end)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+      [actor.id, trackId, programId, priceId, `sub_db_${randomUUID().slice(0, 8)}`, options.status ?? 'ACTIVE', periodEnd, options.cancelAtPeriodEnd ?? false],
+    );
+    return row.id;
+  }
+
+  /** Delivers a Stripe webhook the way Stripe does: the exact JSON bytes plus a signature header. */
+  async function sendWebhook(event: object, options: { signature?: string } = {}): Promise<{ status: number; json: { received?: boolean; result?: string } }> {
+    const res = await fetch(`${app.url}/billing/webhook`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'stripe-signature': options.signature ?? VALID_SIGNATURE },
+      body: JSON.stringify(event),
+    });
+    const text = await res.text();
+    return { status: res.status, json: text ? JSON.parse(text) : {} };
+  }
+
   /** Empties the catalog tables so every test starts from a clean slate (users and taxonomy are kept). */
   async function reset(): Promise<void> {
-    await ds.query(`TRUNCATE tracks, programs, media_assets, audit_logs CASCADE`);
+    await ds.query(`TRUNCATE tracks, programs, media_assets, audit_logs, invoices, stripe_events CASCADE`);
+    await ds.query(`UPDATE users SET stripe_customer_id = NULL`); // a customer is created by the first checkout, so tests start without
     storage.reset();
+    payments.reset();
   }
 
   return {
@@ -105,6 +165,12 @@ export async function startCatalogApp() {
     app,
     call,
     storage,
+    payments,
+    signIn,
+    price,
+    customerOf,
+    subscribe,
+    sendWebhook,
     admin,
     listener,
     api,

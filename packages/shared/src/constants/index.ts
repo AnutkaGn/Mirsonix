@@ -36,3 +36,20 @@ export const STORAGE_PREFIX = { audio: 'audio', cover: 'covers' } as const;
 export const UPLOAD_URL_TTL_SECONDS = 15 * 60;
 /** Lifetime of a signed cover URL when covers are not served from a public base URL. */
 export const COVER_URL_TTL_SECONDS = 60 * 60;
+
+/** Stripe refuses charges under $0.50, and a price above $10,000 a period is almost certainly a typo. */
+export const MIN_PRICE_MINOR = 50;
+export const MAX_PRICE_MINOR = 1_000_000;
+
+/**
+ * An ACTIVE subscription whose paid period ended longer ago than this is no longer trusted. Renewals arrive as
+ * webhooks within minutes, so a longer gap means webhooks are being missed and access must not run on forever.
+ */
+export const ACCESS_PERIOD_GRACE_SECONDS = 6 * 60 * 60;
+
+/** Where Stripe sends the browser back to, relative to the web origin. */
+export const CHECKOUT_RETURN_PATHS = {
+  success: '/library?checkout=success',
+  cancel: '/?checkout=cancelled',
+  portal: '/library',
+} as const;

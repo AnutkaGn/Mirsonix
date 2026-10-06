@@ -55,6 +55,12 @@ describe('GET /catalog/tracks', () => {
     }
   });
 
+  it('shows an item with nothing on sale as having no prices, rather than omitting the field', async () => {
+    await t.track({}, { publish: true });
+
+    expect((await t.asUser.get('/catalog/tracks')).json.items[0].prices).toEqual({ month: null, year: null });
+  });
+
   it('pages without repeating or skipping a track', async () => {
     const created = [];
     for (let i = 0; i < 5; i++) created.push((await t.track({ title: `Track ${i}` }, { publish: true })).id);
