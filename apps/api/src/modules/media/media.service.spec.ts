@@ -178,6 +178,13 @@ describe('MediaService', () => {
       expect(storage.createDownloadUrl).toHaveBeenCalledWith('covers/a.png', 3600);
     });
 
+    it('is null, without failing, when storage is not configured, so the catalog still loads', async () => {
+      storage.isConfigured.mockReturnValue(false);
+
+      await expect(service.imageUrl(cover)).resolves.toBeNull();
+      expect(storage.createDownloadUrl).not.toHaveBeenCalled();
+    });
+
     it('is null when there is no image', async () => {
       await expect(service.imageUrl(null)).resolves.toBeNull();
       await expect(service.imageUrls([cover, undefined])).resolves.toHaveLength(2);

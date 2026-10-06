@@ -53,3 +53,10 @@ export const CHECKOUT_RETURN_PATHS = {
   cancel: '/?checkout=cancelled',
   portal: '/library',
 } as const;
+
+/** Within this many seconds of the end, a saved position is treated as "finished" and playback restarts from zero. */
+export const RESUME_END_MARGIN_SEC = 5;
+/** A client's reported listening time may exceed the wall-clock time since the session began by at most this much. */
+export const HEARTBEAT_SLACK_SEC = 5;
+/** How often the player reports progress while playing. */
+export const HEARTBEAT_INTERVAL_SEC = 15;

@@ -20,9 +20,11 @@ interface RequestOptions<S extends z.ZodType> {
   signal?: AbortSignal;
   /** Public endpoint: no bearer token, and a 401 is a real answer rather than a cue to refresh. */
   anonymous?: boolean;
+  /** Lets the request finish even if the page is closing (a last progress report). */
+  keepalive?: boolean;
 }
 
-async function send(path: string, { method = 'GET', body, signal, anonymous }: RequestOptions<z.ZodType>) {
+async function send(path: string, { method = 'GET', body, signal, anonymous, keepalive }: RequestOptions<z.ZodType>) {
   const token = useAuthStore.getState().accessToken;
   const headers: Record<string, string> = {};
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -30,6 +32,7 @@ async function send(path: string, { method = 'GET', body, signal, anonymous }: R
   return fetch(`${env.VITE_API_URL}${path}`, {
     method,
     signal,
+    keepalive,
     credentials: 'include', // refresh token lives in an httpOnly cookie
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),

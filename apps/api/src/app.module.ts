@@ -10,11 +10,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { MediaModule } from './modules/media/media.module';
+import { PlaybackModule } from './modules/playback/playback.module';
 import { StreamingModule } from './modules/streaming/streaming.module';
 import { HealthModule } from './modules/health/health.module';
 
 @Module({
-  imports: [AppConfigModule, DatabaseModule, ThrottlingModule, AuthModule, CatalogModule, MediaModule, BillingModule, AccessModule, StreamingModule, HealthModule],
+  imports: [AppConfigModule, DatabaseModule, ThrottlingModule, AuthModule, CatalogModule, MediaModule, BillingModule, AccessModule, StreamingModule, PlaybackModule, HealthModule],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },

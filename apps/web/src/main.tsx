@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { Providers } from '@/app/providers';
 import { router } from '@/app/router';
+import { followSystemColorScheme } from '@/lib/theme';
 import './index.css';
+
+followSystemColorScheme();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

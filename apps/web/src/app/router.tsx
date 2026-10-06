@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { RequireAuth } from '@/features/auth/RequireAuth';
-import { PublicLayout } from '@/layouts/PublicLayout';
+import { AppLayout } from '@/layouts/AppLayout';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
@@ -12,7 +12,7 @@ const lazyRoute =
 
 export const router = createBrowserRouter([
   {
-    element: <PublicLayout />,
+    element: <AppLayout />,
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/login', lazy: lazyRoute(() => import('@/pages/LoginPage'), 'LoginPage') },
@@ -20,7 +20,13 @@ export const router = createBrowserRouter([
       { path: '/auth/callback', lazy: lazyRoute(() => import('@/pages/GoogleCallbackPage'), 'GoogleCallbackPage') },
       {
         element: <RequireAuth />,
-        children: [{ path: '/library', lazy: lazyRoute(() => import('@/pages/LibraryPage'), 'LibraryPage') }],
+        children: [
+          { path: '/catalog', lazy: lazyRoute(() => import('@/pages/CatalogPage'), 'CatalogPage') },
+          { path: '/catalog/tracks/:slug', lazy: lazyRoute(() => import('@/pages/TrackPage'), 'TrackPage') },
+          { path: '/catalog/programs/:slug', lazy: lazyRoute(() => import('@/pages/ProgramPage'), 'ProgramPage') },
+          { path: '/library', lazy: lazyRoute(() => import('@/pages/LibraryPage'), 'LibraryPage') },
+          { path: '/library/programs/:id', lazy: lazyRoute(() => import('@/pages/LibraryProgramPage'), 'LibraryProgramPage') },
+        ],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

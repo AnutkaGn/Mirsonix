@@ -38,6 +38,12 @@ export class ContentLookupService {
     else await this.programs.update(target.id, { stripeProductId });
   }
 
+  async durationSecOf(trackId: string): Promise<number> {
+    const track = await this.tracks.findById(trackId);
+    if (!track) throw new NotFoundException('Track not found');
+    return track.durationSec;
+  }
+
   /** The audio object of a track, for issuing a stream URL. Callers must have checked access first. */
   async audioAssetIdOf(trackId: string): Promise<string> {
     const track = await this.tracks.findById(trackId);

@@ -1,35 +1,30 @@
-import { healthResponseSchema } from '@mirsonix/shared';
-import { useQuery } from '@tanstack/react-query';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { apiRequest } from '@/lib/api-client';
-import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuthStore } from '@/stores/auth.store';
 
+/** The catalog is for members only, so visitors get an invitation and members go straight to it. */
 export function HomePage() {
   const { t } = useTranslation();
-  const health = useQuery({
-    queryKey: ['health'],
-    queryFn: ({ signal }) => apiRequest('/health', { schema: healthResponseSchema, signal }),
-  });
+  const status = useAuthStore((state) => state.status);
+  const { search } = useLocation();
 
-  const status = health.isPending ? 'checking' : health.isError ? 'apiOffline' : 'apiOnline';
+  if (status === 'authenticated') return <Navigate to={`/catalog${search}`} replace />; // keeps ?checkout=cancelled
+  if (status === 'unknown') return <Skeleton className="h-64" />;
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-4xl font-semibold">{t('app.tagline')}</h1>
-      <p
-        className={cn(
-          'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm',
-          health.isError ? 'text-red-500' : 'text-muted-foreground',
-        )}
-      >
-        <span
-          className={cn(
-            'size-2 rounded-full',
-            health.isSuccess ? 'bg-green-500' : health.isError ? 'bg-red-500' : 'bg-yellow-500',
-          )}
-        />
-        {t(`status.${status}`)}
-      </p>
+    <section className="mx-auto max-w-2xl space-y-8 py-16 text-center">
+      <h1 className="text-4xl font-semibold sm:text-5xl">{t('app.tagline')}</h1>
+      <p className="text-lg text-muted-foreground">{t('home.subtitle')}</p>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link to="/register" className={buttonVariants()}>
+          {t('home.start')}
+        </Link>
+        <Link to="/login" className={buttonVariants({ variant: 'outline' })}>
+          {t('nav.signIn')}
+        </Link>
+      </div>
     </section>
   );
 }

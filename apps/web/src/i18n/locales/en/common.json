@@ -9,7 +9,10 @@
     "admin": "Admin",
     "signIn": "Sign in",
     "signUp": "Sign up",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "catalog": "Catalog",
+    "main": "Main",
+    "skipToContent": "Skip to content"
   },
   "auth": {
     "name": "Name (optional)",
@@ -48,10 +51,139 @@
     "back": "Back to home"
   },
   "common": {
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "close": "Close",
+    "pagination": "Pagination",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {{page}} of {{total}}",
+    "retry": "Try again",
+    "error": "Something went wrong. Please try again."
   },
   "admin": {
     "badge": "admin",
     "dashboard": "Dashboard"
+  },
+  "player": {
+    "play": "Play",
+    "pause": "Pause",
+    "previous": "Previous track",
+    "next": "Next track",
+    "expand": "Open full player",
+    "collapse": "Close full player",
+    "retry": "Try again",
+    "error": "This track could not be played.",
+    "position": "Playback position",
+    "speed": "Playback speed",
+    "queue": "Up next",
+    "nowPlaying": "Now playing",
+    "fullDescription": "Full-screen player with playback controls and the queue.",
+    "sleep": {
+      "label": "Sleep timer",
+      "off": "Off",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "endOfTrack": "End of track",
+      "remaining": "{{count}} min"
+    },
+    "loop": {
+      "off": "Repeat: off",
+      "all": "Repeat: all tracks",
+      "one": "Repeat: this track"
+    }
+  },
+  "price": {
+    "perMonth": "{{price}} / month",
+    "perYear": "{{price}} / year"
+  },
+  "billing": {
+    "subscribe": "Subscribe",
+    "notOnSale": "Not on sale yet",
+    "choosePlan": "Choose your plan",
+    "choosePlanHint": "Subscribe to “{{title}}”. You can cancel any time and keep access until the end of the period you paid for.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "redirecting": "Taking you to our secure payment page…",
+    "secureNote": "Payments are handled securely by Stripe. We never see your card details.",
+    "manage": "Manage subscriptions",
+    "errors": {
+      "alreadySubscribed": "You already subscribe to this. Check your library.",
+      "unavailable": "This is not available for purchase right now.",
+      "paymentsDown": "Payments are temporarily unavailable. Please try again later.",
+      "tooMany": "Too many attempts. Please wait a minute and try again.",
+      "noBillingAccount": "You have no billing account yet.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "library": {
+    "title": "My Library",
+    "programs": "Programs",
+    "tracks": "Tracks",
+    "empty": "Your library is empty",
+    "emptyHint": "Subscribe to a track or a program and it will appear here.",
+    "browse": "Browse the catalog",
+    "loadError": "We could not load your library.",
+    "access": {
+      "renews": "Renews on {{date}}",
+      "ends": "Access ends on {{date}}",
+      "active": "Active",
+      "granted": "Included for you",
+      "grantedUntil": "Included until {{date}}"
+    },
+    "openProgram": "Open",
+    "playAll": "Play all",
+    "programNoAccess": "You do not have access to this program.",
+    "checkout": {
+      "pending": "Payment received. Your new item will appear here in a moment…",
+      "slow": "Still waiting for confirmation. This page updates by itself; you can also refresh it in a minute.",
+      "dismiss": "Dismiss",
+      "done": "Your subscription is active. Enjoy!"
+    }
+  },
+  "waves": {
+    "SINE": "Sine",
+    "BINAURAL": "Binaural",
+    "ISOCHRONIC": "Isochronic",
+    "MONAURAL": "Monaural"
+  },
+  "catalog": {
+    "title": "Catalog",
+    "tabs": {
+      "tracks": "Tracks",
+      "programs": "Programs"
+    },
+    "search": "Search by title",
+    "filters": {
+      "label": "Filter tracks",
+      "wave": "Wave type",
+      "element": "Element",
+      "meridian": "Meridian",
+      "issue": "Helps with",
+      "any": "Any",
+      "clear": "Clear filters"
+    },
+    "owned": "In your library",
+    "helpsWith": "Helps with",
+    "hertz": "{{value}} Hz",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks",
+    "empty": "Nothing matches these filters.",
+    "emptyAll": "There is nothing here yet. Please check back soon.",
+    "loadError": "We could not load the catalog.",
+    "cancelled": "Checkout was cancelled. You have not been charged.",
+    "dismiss": "Dismiss",
+    "notFound": "We could not find that.",
+    "back": "Back to the catalog",
+    "frequency": "Frequency",
+    "meridians": "Meridians",
+    "targets": "Helps with",
+    "included": "Tracks in this program",
+    "inLibrary": "This is in your library.",
+    "openLibrary": "Open in your library",
+    "programIncludes": "Includes"
+  },
+  "home": {
+    "subtitle": "Frequency-based audio for the body and the meridians: for back recovery, chronic pain and deep rest. Subscribe to the tracks and programs you need.",
+    "start": "Get started"
   }
 }

@@ -103,9 +103,12 @@ export class MediaService {
     return asset;
   }
 
-  /** Public URL when covers are served from a public base URL, otherwise a signed one. Null when there is no image. */
+  /**
+   * Public URL when covers are served from a public base URL, otherwise a signed one. Null when there is no image,
+   * and also when storage is not configured: browsing the catalog must not depend on it, covers just show a placeholder.
+   */
   async imageUrl(asset: MediaAsset | null | undefined): Promise<string | null> {
-    if (!asset) return null;
+    if (!asset || !this.storage.isConfigured()) return null;
     return this.storage.publicUrl(asset.s3Key) ?? this.storage.createDownloadUrl(asset.s3Key, COVER_URL_TTL_SECONDS);
   }
 
