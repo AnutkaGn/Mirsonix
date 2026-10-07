@@ -17,15 +17,27 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/login', lazy: lazyRoute(() => import('@/pages/LoginPage'), 'LoginPage') },
       { path: '/register', lazy: lazyRoute(() => import('@/pages/RegisterPage'), 'RegisterPage') },
-      { path: '/auth/callback', lazy: lazyRoute(() => import('@/pages/GoogleCallbackPage'), 'GoogleCallbackPage') },
+      {
+        path: '/auth/callback',
+        lazy: lazyRoute(() => import('@/pages/GoogleCallbackPage'), 'GoogleCallbackPage'),
+      },
       {
         element: <RequireAuth />,
         children: [
           { path: '/catalog', lazy: lazyRoute(() => import('@/pages/CatalogPage'), 'CatalogPage') },
-          { path: '/catalog/tracks/:slug', lazy: lazyRoute(() => import('@/pages/TrackPage'), 'TrackPage') },
-          { path: '/catalog/programs/:slug', lazy: lazyRoute(() => import('@/pages/ProgramPage'), 'ProgramPage') },
+          {
+            path: '/catalog/tracks/:slug',
+            lazy: lazyRoute(() => import('@/pages/TrackPage'), 'TrackPage'),
+          },
+          {
+            path: '/catalog/programs/:slug',
+            lazy: lazyRoute(() => import('@/pages/ProgramPage'), 'ProgramPage'),
+          },
           { path: '/library', lazy: lazyRoute(() => import('@/pages/LibraryPage'), 'LibraryPage') },
-          { path: '/library/programs/:id', lazy: lazyRoute(() => import('@/pages/LibraryProgramPage'), 'LibraryProgramPage') },
+          {
+            path: '/library/programs/:id',
+            lazy: lazyRoute(() => import('@/pages/LibraryProgramPage'), 'LibraryProgramPage'),
+          },
         ],
       },
       { path: '*', element: <NotFoundPage /> },
@@ -37,7 +49,41 @@ export const router = createBrowserRouter([
       {
         path: '/admin',
         lazy: lazyRoute(() => import('@/layouts/AdminLayout'), 'AdminLayout'),
-        children: [{ index: true, lazy: lazyRoute(() => import('@/pages/AdminDashboardPage'), 'AdminDashboardPage') }],
+        children: [
+          {
+            index: true,
+            lazy: lazyRoute(() => import('@/pages/AdminDashboardPage'), 'AdminDashboardPage'),
+          },
+          {
+            path: 'tracks',
+            lazy: lazyRoute(() => import('@/pages/AdminTracksPage'), 'AdminTracksPage'),
+          },
+          {
+            path: 'tracks/new',
+            lazy: lazyRoute(() => import('@/pages/AdminTrackEditPage'), 'AdminTrackEditPage'),
+          },
+          {
+            path: 'tracks/:id',
+            lazy: lazyRoute(() => import('@/pages/AdminTrackEditPage'), 'AdminTrackEditPage'),
+          },
+          {
+            path: 'programs',
+            lazy: lazyRoute(() => import('@/pages/AdminProgramsPage'), 'AdminProgramsPage'),
+          },
+          {
+            path: 'programs/new',
+            lazy: lazyRoute(() => import('@/pages/AdminProgramEditPage'), 'AdminProgramEditPage'),
+          },
+          {
+            path: 'programs/:id',
+            lazy: lazyRoute(() => import('@/pages/AdminProgramEditPage'), 'AdminProgramEditPage'),
+          },
+          {
+            path: 'grants',
+            lazy: lazyRoute(() => import('@/pages/AdminGrantsPage'), 'AdminGrantsPage'),
+          },
+          { path: '*', element: <NotFoundPage /> },
+        ],
       },
     ],
   },

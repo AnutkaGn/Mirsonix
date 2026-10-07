@@ -89,4 +89,4 @@ An `ACTIVE` subscription whose paid period ended more than 6 hours ago is not tr
 - If a listener pays twice through two checkouts, the second subscription is cancelled automatically, but refunding the extra charge is manual.
 - Refunds are recorded; there is no admin refund action. Refund in the Stripe dashboard.
 - Trials, coupons and tax are not configured. Promotion codes are allowed at checkout once you create them in Stripe.
-- The statistics endpoints (revenue, top tracks) come in a later step; the data they need (`invoices`) is already being recorded.
+- Statistics (`GET /admin/stats/summary|revenue|top`) are built from `invoices` (paid, minus refunds), `subscriptions` and `playback_sessions`. Revenue only moves once Stripe's `invoice.paid` webhooks arrive, so it stays at zero until the Stripe keys and webhook are set up.

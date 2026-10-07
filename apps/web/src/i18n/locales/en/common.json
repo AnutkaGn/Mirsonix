@@ -62,7 +62,151 @@
   },
   "admin": {
     "badge": "admin",
-    "dashboard": "Dashboard"
+    "loadError": "We could not load this. Please try again.",
+    "nav": {
+      "label": "Admin",
+      "dashboard": "Dashboard",
+      "tracks": "Tracks",
+      "programs": "Programs",
+      "grants": "Access grants",
+      "backToSite": "Back to the site"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "ARCHIVED": "Archived"
+    },
+    "actions": {
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "create": "Create",
+      "publish": "Publish",
+      "republish": "Publish again",
+      "archive": "Archive",
+      "add": "Add",
+      "addTrack": "Add “{{title}}” to the program",
+      "remove": "Remove “{{title}}”",
+      "moveUp": "Move “{{title}}” up",
+      "moveDown": "Move “{{title}}” down"
+    },
+    "form": {
+      "errors": {
+        "required": "This field is required.",
+        "invalid": "This value is not valid."
+      }
+    },
+    "list": {
+      "search": "Search by title",
+      "status": "Status",
+      "anyStatus": "Any status",
+      "empty": "Nothing here yet."
+    },
+    "upload": {
+      "choose": "Choose file",
+      "replace": "Replace file",
+      "attached": "File attached",
+      "progress": "Uploading {{file}}"
+    },
+    "errors": {
+      "fileType": "This file type is not allowed.",
+      "fileSize": "This file is too large.",
+      "audioUnreadable": "The browser could not read this audio file.",
+      "storageDown": "File storage is not configured yet, so uploads are unavailable.",
+      "uploadFailed": "The upload failed. Please try again.",
+      "notStored": "The file has not arrived in storage yet. Please try again.",
+      "paymentsDown": "Payments are not configured yet, so prices cannot be saved.",
+      "notFound": "That item no longer exists.",
+      "conflict": "This conflicts with the current state. Reload and try again.",
+      "rejected": "The server did not accept this. Check the fields and try again.",
+      "tooMany": "Too many requests. Please wait a minute and try again.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "prices": {
+      "title": "Prices",
+      "hint": "In US dollars. Leave a field empty to take that plan off sale. People who already subscribe keep the price they bought at.",
+      "monthly": "Monthly price",
+      "yearly": "Yearly price",
+      "offSale": "Not on sale",
+      "save": "Save prices"
+    },
+    "tracks": {
+      "new": "New track",
+      "preview": "Listen to the file",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "frequency": "Frequency (Hz)",
+        "wave": "Wave type",
+        "meridians": "Meridians",
+        "issues": "Helps with",
+        "audio": "Audio file",
+        "cover": "Cover image"
+      }
+    },
+    "programs": {
+      "new": "New program",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "poster": "Poster image"
+      },
+      "builder": {
+        "title": "Tracks in this program",
+        "empty": "No tracks yet. Add existing ones below or upload a new one.",
+        "search": "Search tracks to add",
+        "available": "Tracks you can add",
+        "noMatches": "No more tracks match.",
+        "save": "Save track order",
+        "uploadNew": "Upload a new track",
+        "uploadNewHint": "The track is created as a draft and added to this program.",
+        "createAndAdd": "Create and add"
+      }
+    },
+    "grants": {
+      "new": "Give access",
+      "email": "Listener email",
+      "kind": "Gives access to",
+      "track": "Track",
+      "program": "Program",
+      "item": "Item",
+      "choose": "Choose…",
+      "source": "Reason",
+      "sources": {
+        "ADMIN": "Admin",
+        "PROMO": "Promotion"
+      },
+      "expires": "Expires on",
+      "expiresHint": "Leave empty for access that does not end.",
+      "note": "Note (optional)",
+      "give": "Give access",
+      "empty": "No access has been granted by hand yet.",
+      "until": "until {{date}}",
+      "state": {
+        "active": "Active",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      },
+      "revoke": "Revoke",
+      "revokeFor": "Revoke access for {{email}}"
+    },
+    "stats": {
+      "period": "Period",
+      "lastDays_one": "Last {{count}} day",
+      "lastDays_other": "Last {{count}} days",
+      "active": "Active subscriptions",
+      "activeSplit": "{{tracks}} tracks · {{programs}} programs",
+      "revenue": "Revenue (net)",
+      "refunded": "{{amount}} refunded",
+      "newSubscriptions": "New subscriptions",
+      "listens": "Listens",
+      "revenueByDay": "Revenue by day",
+      "noData": "No data for this period.",
+      "topTracksSales": "Top tracks by sales",
+      "topProgramsSales": "Top programs by sales",
+      "topTracksListens": "Top tracks by listens",
+      "topProgramsListens": "Top programs by listens"
+    }
   },
   "player": {
     "play": "Play",

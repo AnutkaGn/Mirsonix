@@ -5,3 +5,4 @@ export * from './catalog';
 export * from './billing';
 export * from './library';
 export * from './playback';
+export * from './stats';
